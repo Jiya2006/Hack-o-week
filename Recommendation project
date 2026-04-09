@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kira Outreach AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style id="app-style">
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f9fafb;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    }
+    
+    .card-shadow {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .sidebar {
+      transition: transform 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+    }
+    
+    .slide-in {
+      animation: slideIn 0.3s forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .pulse-animation {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 0.6;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0.6;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Auth Overlay -->
+  <div id="auth-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md w-full card-shadow slide-in">
+      <div class="text-center">
+        <div class="mb-6">
+          <div class="h-20 w-20 gradient-bg rounded-full mx-auto flex items-center justify-center">
+            <i class="fas fa-robot text-white text-4xl"></i>
+          </div>
+        </div>
+        <h2 class="text-3xl font-bold mb-2 text-gray-800">Welcome to Kira</h2>
+        <p class="text-gray-600 mb-6">Your AI-powered cold email assistant</p>
+        
+        <button id="gmail-auth-btn" class="w-full bg-white border border-gray-300 rounded-lg px-6 py-3 flex items-center justify-center space-x-3 hover:bg-gray-50 transition-colors">
+          <img src="https://cdn.pixabay.com/photo/2015/12/11/11/43/google-1088004_960_720.png" alt="Gmail" class="h-6 w-6">
+          <span class="text-gray-700 font-medium">Connect with Gmail</span>
+        </button>
+        
+        <p class="mt-4 text-sm text-gray-500">Kira needs access to your Gmail to send and analyze emails on your behalf</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="gradient-bg text-white">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <button id="mobile-menu-btn" class="md:hidden text-xl">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="font-bold text-xl flex items-center">
+            <i class="fas fa-robot mr-2"></i> Kira Outreach AI
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="hidden md:flex items-center space-x-1 text-sm bg-white bg-opacity-20 rounded-full px-3 py-1">
+            <span class="h-2 w-2 bg-green-400 rounded-full"></span>
+            <span>Connected to Gmail</span>
+          </div>
+          <div class="relative">
+            <button id="user-menu-btn" class="flex items-center space-x-2">
+              <span class="hidden md:inline">john.doe@example.com</span>
+              <div class="h-8 w-8 rounded-full bg-purple-300 flex items-center justify-center text-purple-700 font-medium">JD</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <!-- Sidebar -->
+      <aside id="sidebar" class="sidebar w-64 bg-white border-r border-gray-200 h-full fixed md:static z-40 md:z-0">
+        <div class="p-4 space-y-6">
+          <nav>
+            <ul class="space-y-1">
+              <li>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-3 py-2 rounded-lg bg-indigo-50 text-indigo-700">
+                  <i class="fas fa-home"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
+                  <i class="fas fa-users"></i>
+                  <span>Recipients</span>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
+                  <i class="fas fa-envelope"></i>
+                  <span>Templates</span>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span>Schedule</span>
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
+                  <i class="fas fa-chart-line"></i>
+                  <span>Analytics</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          
+          <div class="pt-4 border-t border-gray-200">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Recent Campaigns</h3>
+            <ul class="mt-2 space-y-1">
+              <li>
+                <a href="javascript:void(0)" class="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+                  Marketing VPs - Tech
+                </a>
+              </li>
+              <li>
+                <a href="javascript:void(0)" class="block px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+                  Startup Founders
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="pt-4">
+            <button id="settings-btn" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 w-full">
+              <i class="fas fa-cog"></i>
+              <span>Settings</span>
+            </button>
+            <button id="help-btn" class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 w-full">
+              <i class="fas fa-question-circle"></i>
+              <span>Help & Support</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-4 md:p-6 overflow-auto">
+        <div class="max-w-7xl mx-auto">
+          <!-- Welcome Banner -->
+          <div class="bg-white rounded-xl p-6 mb-6 card-shadow">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h1 class="text-2xl font-bold text-gray-800">Welcome to Kira Outreach AI</h1>
+                <p class="text-gray-600 mt-1">Let's set up your first email campaign</p>
+              </div>
+              <button id="new-campaign-btn" class="gradient-bg text-white px-6 py-2 rounded-lg font-medium flex items-center justify-center">
+                <i class="fas fa-plus mr-2"></i> New Campaign
+              </button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Recipients Panel -->
+            <div class="bg-white rounded-xl p-6 card-shadow col-span-1">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">
+                  <i class="fas fa-users text-indigo-600 mr-2"></i> Recipients
+                </h2>
+                <div class="flex space-x-2">
+                  <button id="import-recipients-btn" class="text-indigo-600 hover:text-indigo-800">
+                    <i class="fas fa-upload"></i>
+                  </button>
+                  <button id="add-recipients-btn" class="text-indigo-600 hover:text-indigo-800">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="relative">
+                  <input type="text" placeholder="Search job titles, industries..." class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+                
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">Job Titles</label>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-sm flex items-center">
+                      Marketing Director
+                      <button class="ml-1 text-indigo-600"><i class="fas fa-times-circle"></i></button>
+                    </span>
+                    <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-sm flex items-center">
+                      CMO
+                      <button class="ml-1 text-indigo-600"><i class="fas fa-times-circle"></i></button>
+                    </span>
+                    <button class="text-indigo-600 text-sm hover:underline">+ Add more</button>
+                  </div>
+                </div>
+                
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">Industries</label>
+                  <div class="flex flex-wrap gap-2">
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm flex items-center">
+                      Technology
+                      <button class="ml-1 text-green-600"><i class="fas fa-times-circle"></i></button>
+                    </span>
+                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-md text-sm flex items-center">
+                      SaaS
+                      <button class="ml-1 text-green-600"><i class="fas fa-times-circle"></i></button>
+                    </span>
+                    <button class="text-indigo-600 text-sm hover:underline">+ Add more</button>
+                  </div>
+                </div>
+                
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">Company Size</label>
+                  <select class="w-full border border-gray-300 rounded-lg p-2">
+                    <option>All sizes</option>
+                    <option>1-10 employees</option>
+                    <option>11-50 employees</option>
+                    <option>51-200 employees</option>
+                    <option>201-500 employees</option>
+                    <option>501-1000 employees</option>
+                    <option>1000+ employees</option>
+                  </select>
+                </div>
+                
+                <div class="pt-4 text-center">
+                  <button class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                    Generate List
+                  </button>
+                  <p class="text-sm text-gray-500 mt-2">Estimated reach: 200-300 contacts</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Email Style Panel -->
+            <div class="bg-white rounded-xl p-6 card-shadow col-span-1">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">
+                  <i class="fas fa-envelope text-indigo-600 mr-2"></i> Email Style
+                </h2>
+                <button id="preview-email-btn" class="text-indigo-600 hover:text-indigo-800">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Tone & Style</label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <div class="tone-option border border-indigo-500 bg-indigo-50 p-3 rounded-lg text-center cursor-pointer">
+                      <i class="fas fa-briefcase text-indigo-600 mb-1"></i>
+                      <p class="text-sm font-medium">Professional</p>
+                    </div>
+                    <div class="tone-option border border-gray-200 p-3 rounded-lg text-center cursor-pointer">
+                      <i class="fas fa-coffee text-gray-500 mb-1"></i>
+                      <p class="text-sm font-medium">Casual</p>
+                    </div>
+                    <div class="tone-option border border-gray-200 p-3 rounded-lg text-center cursor-pointer">
+                      <i class="fas fa-bolt text-gray-500 mb-1"></i>
+                      <p class="text-sm font-medium">Persuasive</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Email Length</label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <div class="length-option border border-gray-200 p-3 rounded-lg text-center cursor-pointer">
+                      <p class="text-sm font-medium">Short</p>
+                      <p class="text-xs text-gray-500">1-2 paragraphs</p>
+                    </div>
+                    <div class="length-option border border-indigo-500 bg-indigo-50 p-3 rounded-lg text-center cursor-pointer">
+                      <p class="text-sm font-medium">Medium</p>
+                      <p class="text-xs text-gray-500">2-3 paragraphs</p>
+                    </div>
+                    <div class="length-option border border-gray-200 p-3 rounded-lg text-center cursor-pointer">
+                      <p class="text-sm font-medium">Detailed</p>
+                      <p class="text-xs text-gray-500">3+ paragraphs</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Personalization Level</label>
+                  <input type="range" min="1" max="5" value="3" class="w-full accent-indigo-600">
+                  <div class="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Generic</span>
+                    <span>Highly personalized</span>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Key Message</label>
+                  <textarea placeholder="What's the main point you want to convey?" class="w-full border border-gray-300 rounded-lg p-2 h-20 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Call to Action</label>
+                  <select class="w-full border border-gray-300 rounded-lg p-2">
+                    <option>Schedule a call</option>
+                    <option>Request a demo</option>
+                    <option>Reply with interest</option>
+                    <option>Visit website</option>
+                    <option>Download resource</option>
+                    <option>Custom...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Schedule Panel -->
+            <div class="bg-white rounded-xl p-6 card-shadow col-span-1">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-800">
+                  <i class="fas fa-calendar-alt text-indigo-600 mr-2"></i> Schedule
+                </h2>
+                <button id="schedule-settings-btn" class="text-indigo-600 hover:text-indigo-800">
+                  <i class="fas fa-cog"></i>
+                </button>
+              </div>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Daily Sending Limit</label>
+                  <div class="relative">
+                    <input type="number" value="25" min="1" max="100" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span class="text-gray-500">emails/day</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">Recommended: 20-30 emails per day to avoid spam filters</p>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Sending Window</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-gray-500">Start time</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-2">
+                        <option>9:00 AM</option>
+                        <option>10:00 AM</option>
+                        <option>11:00 AM</option>
+                        <option>12:00 PM</option>
+                        <option>1:00 PM</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="text-xs text-gray-500">End time</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-2">
+                        <option>3:00 PM</option>
+                        <option>4:00 PM</option>
+                        <option>5:00 PM</option>
+                        <option>6:00 PM</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Send on</label>
+                  <div class="grid grid-cols-7 gap-1">
+                    <div class="day-select border border-indigo-500 bg-indigo-50 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">M</span>
+                    </div>
+                    <div class="day-select border border-indigo-500 bg-indigo-50 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">T</span>
+                    </div>
+                    <div class="day-select border border-indigo-500 bg-indigo-50 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">W</span>
+                    </div>
+                    <div class="day-select border border-indigo-500 bg-indigo-50 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">T</span>
+                    </div>
+                    <div class="day-select border border-indigo-500 bg-indigo-50 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">F</span>
+                    </div>
+                    <div class="day-select border border-gray-200 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">S</span>
+                    </div>
+                    <div class="day-select border border-gray-200 rounded p-1 text-center cursor-pointer">
+                      <span class="text-xs font-medium">S</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Duration</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-gray-500">Start date</label>
+                      <input type="date" class="w-full border border-gray-300 rounded-lg p-2">
+                    </div>
+                    <div>
+                      <label class="text-xs text-gray-500">End date (optional)</label>
+                      <input type="date" class="w-full border border-gray-300 rounded-lg p-2">
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Follow-up Settings</label>
+                  <div class="flex items-center mb-2">
+                    <input type="checkbox" id="enable-followup" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="enable-followup" class="ml-2 text-sm text-gray-700">Enable follow-ups</label>
+                  </div>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div>
+                      <label class="text-xs text-gray-500">Max follow-ups</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-2">
+                        <option>1</option>
+                        <option>2</option>
+                        <option selected>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="text-xs text-gray-500">Days between</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-2">
+                        <option>2</option>
+                        <option>3</option>
+                        <option selected>4</option>
+                        <option>5</option>
+                        <option>7</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Activity Feed -->
+          <div class="bg-white rounded-xl p-6 mt-6 card-shadow">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold text-gray-800">
+                <i class="fas fa-stream text-indigo-600 mr-2"></i> Activity Feed
+              </h2>
+              <div class="flex space-x-2">
+                <button id="filter-activity-btn" class="text-indigo-600 hover:text-indigo-800">
+                  <i class="fas fa-filter"></i>
+                </button>
+                <button id="refresh-activity-btn" class="text-indigo-600 hover:text-indigo-800">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="space-y-4">
+              <div class="border-l-4 border-green-500 pl-4 py-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-gray-800">New Reply - Sarah Johnson (CTO at TechCorp)</h4>
+                  <span class="text-sm text-gray-500">Today, 11:23 AM</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">
+                  "Thanks for reaching out! I'd be interested in learning more about your solution. How about a quick call next week?"
+                </p>
+                <div class="mt-2 flex space-x-2">
+                  <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">INTERESTED</span>
+                  <button class="text-indigo-600 text-sm hover:underline">Respond</button>
+                  <button class="text-indigo-600 text-sm hover:underline">View Thread</button>
+                </div>
+              </div>
+              
+              <div class="border-l-4 border-blue-500 pl-4 py-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-gray-800">Email Sent - Mark Williams (VP Marketing at GrowthCo)</h4>
+                  <span class="text-sm text-gray-500">Today, 10:15 AM</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">
+                  Initial contact email sent successfully.
+                </p>
+                <div class="mt-2">
+                  <button class="text-indigo-600 text-sm hover:underline">View Email</button>
+                </div>
+              </div>
+              
+              <div class="border-l-4 border-yellow-500 pl-4 py-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-gray-800">Follow-up Scheduled - Alex Chen (Director at InnovateCorp)</h4>
+                  <span class="text-sm text-gray-500">Today, 9:30 AM</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">
+                  Follow-up #1 scheduled for June 2, 2025
+                </p>
+                <div class="mt-2">
+                  <button class="text-indigo-600 text-sm hover:underline">Edit Schedule</button>
+                </div>
+              </div>
+              
+              <div class="border-l-4 border-gray-300 pl-4 py-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-gray-800">Campaign Started - Tech Marketing Leaders</h4>
+                  <span class="text-sm text-gray-500">Yesterday, 3:45 PM</span>
+                </div>
+                <p class="text-sm text-gray-600 mt-1">
+                  Campaign targeting 75 marketing leaders in the tech industry has been initiated.
+                </p>
+                <div class="mt-2">
+                  <button class="text-indigo-600 text-sm hover:underline">View Campaign</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4 text-center">
+              <button class="text-indigo-600 hover:underline text-sm">Load more activity</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full card-shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Notification Settings</h2>
+        <button id="close-settings-btn" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Notify me when</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input type="checkbox" id="notify-replies" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="notify-replies" class="ml-2 text-sm text-gray-700">Someone replies to my emails</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="notify-matches" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="notify-matches" class="ml-2 text-sm text-gray-700">Kira finds a match to my requirements</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="notify-campaigns" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="notify-campaigns" class="ml-2 text-sm text-gray-700">Campaign completes</label>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Notification channels</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input type="checkbox" id="channel-app" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="channel-app" class="ml-2 text-sm text-gray-700">In-app notifications</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="channel-email" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="channel-email" class="ml-2 text-sm text-gray-700">Email</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="channel-sms" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="channel-sms" class="ml-2 text-sm text-gray-700">SMS</label>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="channel-push" class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="channel-push" class="ml-2 text-sm text-gray-700">Push notifications</label>
+            </div>
+          </div>
+        </div>
+        
+        <div class="pt-4 border-t border-gray-200">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Email forwarding</label>
+          <div class="space-y-2">
+            <div class="flex items-center">
+              <input type="checkbox" id="forward-important" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+              <label for="forward-important" class="ml-2 text-sm text-gray-700">Forward important replies to my email</label>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Kira will forward replies that match your requirements to your email address</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex justify-end space-x-3">
+        <button id="cancel-settings-btn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+          Cancel
+        </button>
+        <button id="save-settings-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Email Preview Modal -->
+  <div id="email-preview-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 max-w-2xl w-full card-shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Email Preview</h2>
+        <button id="close-preview-btn" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="border border-gray-200 rounded-lg p-4 mb-4">
+        <div class="flex justify-between items-center mb-2">
+          <div>
+            <div class="font-medium">To: {{recipient.name}}</div>
+            <div class="text-sm text-gray-500">{{recipient.position}} at {{recipient.company}}</div>
+          </div>
+          <div class="text-sm text-gray-500">{{current_date}}</div>
+        </div>
+        
+        <div class="pt-2 border-t border-gray-200">
+          <div class="font-medium mb-2">Subject: Innovative Solutions for {{recipient.company}}'s Marketing Strategy</div>
+          
+          <div class="prose max-w-none text-gray-700">
+            <p>Hi {{recipient.first_name}},</p>
+            
+            <p>I noticed that {{recipient.company}} has been making significant strides in the {{recipient.industry}} space, particularly with your recent {{recent_initiative}}.</p>
+            
+            <p>At our company, we've been helping organizations like {{similar_company}} achieve {{specific_benefit}} through our specialized approach to {{service_area}}. I thought there might be some valuable synergies worth exploring.</p>
+            
+            <p>Would you be open to a brief 15-minute call next week to discuss how we might be able to help {{recipient.company}} with {{pain_point}}?</p>
+            
+            <p>Best regards,<br>
+            {{user.name}}<br>
+            {{user.position}}<br>
+            {{user.company}}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <div>
+          <button class="text-indigo-600 hover:underline flex items-center">
+            <i class="fas fa-sync-alt mr-1"></i> Regenerate
+          </button>
+        </div>
+        <div class="flex space-x-3">
+          <button id="edit-email-btn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+            Edit
+          </button>
+          <button id="approve-email-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+            Approve Template
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- New Campaign Modal -->
+  <div id="new-campaign-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full card-shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">New Campaign</h2>
+        <button id="close-campaign-btn" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Campaign Name</label>
+          <input type="text" placeholder="e.g., Q2 Sales Outreach" class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+          <textarea placeholder="Describe who you want to reach" class="w-full border border-gray-300 rounded-lg p-2 h-20 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Objective</label>
+          <select class="w-full border border-gray-300 rounded-lg p-2">
+            <option>Book demos/meetings</option>
+            <option>Generate leads</option>
+            <option>Build partnerships</option>
+            <option>Recruit talent</option>
+            <option>Promote event</option>
+            <option>Other</option>
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Qualifying Criteria</label>
+          <textarea placeholder="What makes a prospect a good fit? What responses should Kira flag?" class="w-full border border-gray-300 rounded-lg p-2 h-20 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+          <p class="text-xs text-gray-500 mt-1">Kira will analyze responses and notify you when it finds matches to these criteria</p>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex justify-end space-x-3">
+        <button id="cancel-campaign-btn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+          Cancel
+        </button>
+        <button id="create-campaign-btn" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+          Create Campaign
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script id="app-script">
+    document.addEventListener('DOMContentLoaded', function() {
+      // UI state management
+      let state = {
+        authenticated: false,
+        showSettingsModal: false,
+        showEmailPreviewModal: false,
+        showNewCampaignModal: false,
+        sidebarOpen: false
+      };
+      
+      // Simulate LocalStorage data
+      const localStorageData = {
+        settings: {
+          notifications: {
+            replies: true,
+            matches: true,
+            campaigns: true
+          },
+          channels: {
+            app: true,
+            email: true,
+            sms: false,
+            push: false
+          },
+          forwarding: {
+            important: true
+          }
+        }
+      };
+      
+      // Elements
+      const authOverlay = document.getElementById('auth-overlay');
+      const gmailAuthBtn = document.getElementById('gmail-auth-btn');
+      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+      const sidebar = document.getElementById('sidebar');
+      const settingsBtn = document.getElementById('settings-btn');
+      const settingsModal = document.getElementById('settings-modal');
+      const closeSettingsBtn = document.getElementById('close-settings-btn');
+      const cancelSettingsBtn = document.getElementById('cancel-settings-btn');
+      const saveSettingsBtn = document.getElementById('save-settings-btn');
+      const previewEmailBtn = document.getElementById('preview-email-btn');
+      const emailPreviewModal = document.getElementById('email-preview-modal');
+      const closePreviewBtn = document.getElementById('close-preview-btn');
+      const newCampaignBtn = document.getElementById('new-campaign-btn');
+      const newCampaignModal = document.getElementById('new-campaign-modal');
+      const closeCampaignBtn = document.getElementById('close-campaign-btn');
+      const cancelCampaignBtn = document.getElementById('cancel-campaign-btn');
+      const createCampaignBtn = document.getElementById('create-campaign-btn');
+      
+      // Initialize UI based on state
+      function updateUI() {
+        // Auth state
+        if (state.authenticated) {
+          authOverlay.classList.add('hidden');
+        } else {
+          authOverlay.classList.remove('hidden');
+        }
+        
+        // Sidebar state (mobile)
+        if (state.sidebarOpen) {
+          sidebar.classList.add('open');
+        } else {
+          sidebar.classList.remove('open');
+        }
+        
+        // Modals
+        settingsModal.classList.toggle('hidden', !state.showSettingsModal);
+        emailPreviewModal.classList.toggle('hidden', !state.showEmailPreviewModal);
+        newCampaignModal.classList.toggle('hidden', !state.showNewCampaignModal);
+      }
+      
+      // Event handlers
+      gmailAuthBtn.addEventListener('click', function() {
+        // Simulate authentication
+        setTimeout(() => {
+          state.authenticated = true;
+          updateUI();
+        }, 1000);
+      });
+      
+      mobileMenuBtn.addEventListener('click', function() {
+        state.sidebarOpen = !state.sidebarOpen;
+        updateUI();
+      });
+      
+      settingsBtn.addEventListener('click', function() {
+        state.showSettingsModal = true;
+        updateUI();
+      });
+      
+      closeSettingsBtn.addEventListener('click', function() {
+        state.showSettingsModal = false;
+        updateUI();
+      });
+      
+      cancelSettingsBtn.addEventListener('click', function() {
+        state.showSettingsModal = false;
+        updateUI();
+      });
+      
+      saveSettingsBtn.addEventListener('click', function() {
+        // Simulate saving settings to LocalStorage
+        state.showSettingsModal = false;
+        updateUI();
+      });
+      
+      previewEmailBtn.addEventListener('click', function() {
+        state.showEmailPreviewModal = true;
+        updateUI();
+      });
+      
+      closePreviewBtn.addEventListener('click', function() {
+        state.showEmailPreviewModal = false;
+        updateUI();
+      });
+      
+      newCampaignBtn.addEventListener('click', function() {
+        state.showNewCampaignModal = true;
+        updateUI();
+      });
+      
+      closeCampaignBtn.addEventListener('click', function() {
+        state.showNewCampaignModal = false;
+        updateUI();
+      });
+      
+      cancelCampaignBtn.addEventListener('click', function() {
+        state.showNewCampaignModal = false;
+        updateUI();
+      });
+      
+      createCampaignBtn.addEventListener('click', function() {
+        // Simulate creating campaign
+        state.showNewCampaignModal = false;
+        updateUI();
+      });
+      
+      // Handle clicks outside modals to close them
+      window.addEventListener('click', function(event) {
+        if (event.target === settingsModal) {
+          state.showSettingsModal = false;
+          updateUI();
+        } else if (event.target === emailPreviewModal) {
+          state.showEmailPreviewModal = false;
+          updateUI();
+        } else if (event.target === newCampaignModal) {
+          state.showNewCampaignModal = false;
+          updateUI();
+        }
+      });
+      
+      // Initialize UI
+      updateUI();
+    });
+  </script>
+</body>
+</html>
